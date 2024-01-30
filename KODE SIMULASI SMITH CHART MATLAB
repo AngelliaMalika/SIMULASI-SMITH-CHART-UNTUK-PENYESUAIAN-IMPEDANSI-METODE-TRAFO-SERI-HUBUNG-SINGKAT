@@ -1,0 +1,36 @@
+f = 500e6;        % Frequency, Hz (500 MHz)
+Zl = 50 - 100i;    % Load impedance, Ohms
+Zo = 50;           % Characteristic impedance of the system, Ohms
+
+% Calculate Zin
+Zin = Zl / Zo;
+
+% Design matching network
+n = matchingnetwork('CenterFrequency', f, 'Bandwidth', 1e8, ...
+    'LoadImpedance', Zl, 'SourceImpedance', Zin, 'Components', 2);
+
+% Impedance transformation of Circuit #2 on a Smith chart
+figure;
+smithplot(n, 'Z0', Zo, 'CircuitIndex', 2);
+
+% Putar titik plot di Zin searah jarum jam hingga menyentuh sumbu axis 1/4 lambda
+theta = angle(Zin);
+Zind_rotated = Zin * exp(-1i * theta);
+
+% Hitung titik-titik pada lingkaran rotasi
+num_points = 100; % Jumlah titik pada lingkaran
+theta_rotation = linspace(0, -theta, num_points); % Sudut rotasi untuk membentuk lingkaran
+rotated_points = Zin * exp(-1i * theta_rotation);
+
+% Tarik garis dari titik Smith Chart ke titik Zin
+figure;
+smithplot(Zin);
+hold on;
+plot([0 real(Zin)], [0 imag(Zin)], 'r--');
+
+% Plot titik Zin
+plot(real(Zin), imag(Zin), 'ro', 'MarkerSize', 8);
+
+% Tampilkan nilai Zin
+disp('Nilai Zin:');
+disp(Zin);
